@@ -7,28 +7,84 @@ public class RandomlyGeneratingDungeon extends World
      * Constructor for objects of class RandomlyGeneratingDungeon.
      * 
      */
+    public static Class[] all = {Wall.class,Key.class,Block.class,Lava.class,Water.class};
+    //the map of rooms in the randomly generate dungeon
+    public Map map;
+    private Wall[] walls;
+    private Wall[] openWalls;
+    /**
+    Tile Sets
+    ---------
+    0 = Green
+    1 = Blue
+    2 = Aqua
+    3 = Yellow
+    4 = Grey
+    */
+    int tileset = 0;
     public RandomlyGeneratingDungeon()
     {    
         // Create a new world with 600x400 cells with a cell size of 1x1 pixels.
-        super(680, 480, 1, false); 
+        super(640, 480, 1, false);
+        /*map = new Map(new Room[][]{
+            {new Room(0, new int[]{0, 0}, 0, 1, 0, 1), new Room(1, new int[]{1, 0}, 0, 1, 1, 0)},
+            {new Room(2, new int[]{0, 1}, 1, 0, 0, 1), new Room(3, new int[]{1, 1}, 1, 0, 1, 0)},
+        });*/
+        //[N, S, W, E]
+        map = new Map(0, new int[][][]{
+            {{0, 1, 0, 1}, {0, 1, 1, 1}, {0, 0, 1, 1}, {0, 1, 1, 0}},
+            {{1, 1, 0, 1}, {1, 0, 1, 1}, {0, 1, 1, 0}, {1, 1, 0, 0}},
+            {{1, 1, 0, 1}, {0, 0, 1, 1}, {1, 0, 1, 1}, {1, 1, 1, 0}},
+            {{1, 0, 0, 1}, {0, 0, 1, 1}, {0, 0, 1, 1}, {1, 0, 1, 0}},
+        });
+        System.out.flush();
+        System.out.println(map.getRoom(0));
+        //OBJECTS
         addObject(new Link(),getWidth()/2,getHeight()/2+20);
         addObject(new FadeOverlay(),getWidth()/2,getHeight()/2);
-        addObject(new Wall(getWidth()*2,40),getWidth(),20);
-        addObject(new Wall(getWidth()*2,40),getWidth(),getHeight()-20);
-        addObject(new Wall(40,getHeight()),20,getHeight()/2);
-        addObject(new Wall(40,getHeight()),getWidth()*2-20,getHeight()/2);
-        testDungeon();
+        //WALLS
+        walls = new Wall[]{
+            new Wall(getWidth(),40, getWidth()/2,20),//top wall
+            new Wall(getWidth(),40, getWidth()/2,getHeight()-20),//bottom wall
+            new Wall(40,getHeight(), 20,getHeight()/2),//left wall
+            new Wall(40,getHeight(), getWidth() - 20,getHeight()/2)//right wall
+        };
+        //walls with exits
+        openWalls = new Wall[]{
+            new Wall(getWidth()/2,40, getWidth()/2 - 120,0),//top wall
+            new Wall(getWidth()/2,40, getWidth()/2 - 120,0),//bottom wall
+            new Wall(40,getHeight()/2, 0,getHeight()/2 - 80),//left wall
+            new Wall(40,getHeight()/2, 0,getHeight()/2 - 80)//right wall
+        };
+        //addObject(walls[2],walls[2].xPos, walls[2].yPos + getHeight());
+        generateDungeon();
+        //testDungeon();
+        block(5, 7, true, 1, 2);
         paintOrder();
     }
-    Class[] all = {Wall.class,Key.class,Block.class,Lava.class,Water.class};
+    //when the player goes offscreen, the whole scene scrolls at a specific direction
     public void scroll(String direction){
         int v=0;
         int h=0;
-        if (direction.equals("left"))h=getWidth();
-        if (direction.equals("right"))h=-getWidth();
-        if (direction.equals("up"))v=getHeight();
-        if (direction.equals("down"))v=-getHeight();
         int a=0;
+        switch(direction){
+            case "up": 
+                v = getHeight();
+                map.moveToExit("north");
+                break;
+            case "down": 
+                v = -getHeight();
+                map.moveToExit("south");
+                break;
+            case "left": 
+                h = getWidth();
+                map.moveToExit("west");
+                break;
+            case "right": 
+                h = -getWidth();
+                map.moveToExit("east");
+                break;
+        }
         while (a<all.length){
             List object = getObjects(all[a]);
             if (! object.isEmpty()){
@@ -40,11 +96,9 @@ public class RandomlyGeneratingDungeon extends World
             a++;
         }
     }
-    
     public void paintOrder(){
         setPaintOrder(Link.class,FadeOverlay.class,Wall.class,Key.class,Block.class,Lava.class,Water.class);
     }
-    
     public void act(){
         paintOrder();
         if (tileset==0)setBackground(new GreenfootImage("GreenTile.png"));
@@ -53,7 +107,56 @@ public class RandomlyGeneratingDungeon extends World
         if (tileset==3)setBackground(new GreenfootImage("YellowTile.png"));
         if (tileset==4)setBackground(new GreenfootImage("GreyTile.png"));
     }
-    
+    //Dungeon Manipulation methods
+    void generateRoom(int id){
+        Room room = map.getRoom(id);
+        System.out.println("ID: " + id + "Pos: (" + room.pos[0] + ", " + room.pos[1] + ")");
+        for (int i=0; i < walls.length; i++){
+            Wall wall = walls[i];
+            int newXPos = wall.xPos + getWidth()*room.pos[0];
+            int newYPos = wall.yPos + getHeight()*room.pos[1];
+            //if there is no exit on this side, then add a wall
+            if (room.getExit(i) == 0){
+                //places the walls to the correct room based on its x and y coordinates
+                System.out.println(i);
+                addObject(new Wall(wall.width, wall.height, newXPos, newYPos), newXPos, newYPos);
+            }
+            else{
+                //if there is an exit, then add two half walls to leave an opening
+                Wall halfWall = openWalls[i];
+                addObject(new Wall(halfWall.width, halfWall.height, newXPos - halfWall.xPos, newYPos - halfWall.yPos), newXPos - halfWall.xPos, newYPos - halfWall.yPos);
+                addObject(new Wall(halfWall.width, halfWall.height, newXPos + halfWall.xPos, newYPos + halfWall.yPos), newXPos + halfWall.xPos, newYPos + halfWall.yPos);
+            }
+        }
+    }
+    public void nextRoom(){
+        
+    }
+    //generates the whole dungeon with all the rooms
+    public void generateDungeon(){
+        for (int i=0; i < map.numOfRooms; i++){
+            generateRoom(i);
+        }
+    }
+    public void clearDungeonRoom(){
+        Class[] objects = {Block.class,Wall.class}; //List of objects that will be cleared
+        int object = 0;
+        int i = 0;
+        while (object<objects.length){
+            List Object = getObjects(objects[object]);
+            if (! Object.isEmpty() && (Actor) Object.get(0)!=null){
+                while (i<Object.size()){
+                    removeObject((Actor) Object.get(i));
+                    i++;
+                }
+            }
+            object++;
+            i=0;
+        }
+    }
+    public void generateDungeonEnemies(){
+        
+    }
     public void testDungeon(){
         block(0,0);
         block(4,6,true,-1);
@@ -91,48 +194,9 @@ public class RandomlyGeneratingDungeon extends World
         water(1,3);
     }
     
-    /**
-    Tile Sets
-    ---------
-    0 = Green
-    1 = Blue
-    2 = Aqua
-    3 = Yellow
-    4 = Grey
-    */
-    int tileset = 0;
     public void changeTileSet(int i){
         tileset=i;
     }
-    
-    //Dungeon Manipulation methods
-    
-    public void nextRoom(){
-        
-    }
-    public void generateDungeonRoom(){
-        
-    }
-    public void clearDungeonRoom(){
-        Class[] objects = {Block.class,Wall.class}; //List of objects that will be cleared
-        int object = 0;
-        int i = 0;
-        while (object<objects.length){
-            List Object = getObjects(objects[object]);
-            if (! Object.isEmpty() && (Actor) Object.get(0)!=null){
-                while (i<Object.size()){
-                    removeObject((Actor) Object.get(i));
-                    i++;
-                }
-            }
-            object++;
-            i=0;
-        }
-    }
-    public void generateDungeonEnemies(){
-        
-    }
-    
     //Dungeon Tile Methods
     
     public void block(int x, int y, boolean movable, int event, int keypos){
