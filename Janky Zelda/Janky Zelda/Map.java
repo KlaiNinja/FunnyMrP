@@ -9,6 +9,8 @@ import java.util.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
  */
 public class Map
 {
+    private int[][][] mapLayout;
+    public int startingRoomID;
     private Room[][] rooms;
     private int rows, cols;
     private int currentRow, currentCol;
@@ -24,6 +26,36 @@ public class Map
             this.rows = rooms.length;
             this.cols = rooms[0].length;
             this.numOfRooms = rows * cols;
+        }
+    }
+    public Map(int startingRoom, int[][][] mapLayout){
+        this.startingRoomID = startingRoom;
+        this.mapLayout = mapLayout;
+        this.rows = mapLayout.length;
+        this.cols = mapLayout[0].length;
+        this.numOfRooms = rows * cols;
+        this.rooms = new Room[rows][cols];
+        createRooms();
+    }
+    //Creates each of the rooms based on the given map layout
+    void createRooms(){
+        for (int row=0; row < rows; row++){
+            for (int col=0; col < cols; col++){
+                int[] exits = mapLayout[row][col];
+                int id = row*rows + col;
+                int[] pos = new int[2];
+                //if this room is the starting room, set its the position to the origin
+                if (id == startingRoomID){
+                    pos = new int[]{0, 0};
+                }
+                else {
+                    //finds the position of the room relative to the position of the starting room
+                    int startingRow = startingRoomID/rows;
+                    int startingCol = startingRoomID%cols;
+                    pos = new int[]{col - startingCol, row - startingRow};
+                }
+                rooms[row][col] = new Room(id, pos, exits[0], exits[1], exits[2], exits[3]);
+            }
         }
     }
     //moves to the next room based on the exit name
@@ -55,7 +87,7 @@ public class Map
     public Room getRoom(int id){
         //gets the specifed room based on the ID
         System.out.println(cols);
-        return rooms[(int)id/rows][id%cols];
+        return rooms[id/rows][id%cols];
     }
     private boolean withinMap(int row, int col){
         return (row >= 0 && row < rows) && (col >= 0 && col < cols);
