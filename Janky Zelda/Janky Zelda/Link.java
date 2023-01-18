@@ -8,9 +8,30 @@ public class Link extends Actor
     int ymove2=0;
     int scroll=0;
     int scrollTimer=0;
+    int timer=0;
+    String direction = "left";
+    boolean switchFrame = false;
+    
+    GreenfootImage[] sprites = {
+        new GreenfootImage("LinkLeft.png"),
+        new GreenfootImage("LinkLeftMoving.png"),
+        new GreenfootImage("LinkDown.png"),
+        new GreenfootImage("LinkDownMoving.png"),
+        new GreenfootImage("LinkRight.png"),
+        new GreenfootImage("LinkRightMoving.png"),
+        new GreenfootImage("LinkUp.png"),
+        new GreenfootImage("LinkUpMoving.png")
+    };
+    
+    public Link()
+    {
+        timer = 0;
+    }
+    
     public void act() 
     {
         //Methods
+        playerAnimation(10);
         try{
             ((FadeOverlay)getWorld().getObjects(FadeOverlay.class).get(0)).setLocation(getX(),getY());
         }catch(IndexOutOfBoundsException e){}
@@ -23,6 +44,7 @@ public class Link extends Actor
             if (getY()>=getWorld().getHeight()-1){scroll=3;}
             if (getY()<=0){scroll=4;}
         }
+        timer++;
         if (scroll==0){setLocation(getX()+xmove+xmove2,getY()+ymove+ymove2);}else{scroll();}
     }
     public void scroll(){
@@ -47,14 +69,51 @@ public class Link extends Actor
         if (scroll!=0)return;
         int m=3; //Rate of cells that will be traveled
         //Change movement
-        if (Greenfoot.isKeyDown("a")&&ymove==0){xmove=-m; setRotation(270);}
-        if (Greenfoot.isKeyDown("d")&&ymove==0){xmove=m; setRotation(90);}
-        if (Greenfoot.isKeyDown("w")&&xmove==0){ymove=-m; setRotation(0);}
-        if (Greenfoot.isKeyDown("s")&&xmove==0){ymove=m; setRotation(180);}
+        if (Greenfoot.isKeyDown("a")&&ymove==0){xmove=-m; direction="left";}
+        if (Greenfoot.isKeyDown("d")&&ymove==0){xmove=m; direction="right";}
+        if (Greenfoot.isKeyDown("w")&&xmove==0){ymove=-m; direction="up";}
+        if (Greenfoot.isKeyDown("s")&&xmove==0){ymove=m; direction="down";}
         if (! Greenfoot.isKeyDown("a")&&! Greenfoot.isKeyDown("d")){xmove=0;}
         if (! Greenfoot.isKeyDown("w")&&! Greenfoot.isKeyDown("s")){ymove=0;}
     }
-    static String direction="up";
+    public void playerAnimation(int frameRate)
+    {
+        GreenfootImage frame1;
+        GreenfootImage frame2;
+        switch(direction){
+            case "left":
+                frame1 = sprites[0];
+                frame2 = sprites[1];
+                break;
+            case "right":
+                frame1 = sprites[4];
+                frame2 = sprites[5];
+                break;
+            case "up":
+                frame1 = sprites[6];
+                frame2 = sprites[7];
+                break;
+            case "down":
+                frame1 = sprites[2];
+                frame2 = sprites[3];
+                break;
+            default:
+                frame1 = sprites[0];
+                frame2 = sprites[1];
+                break;
+        }
+        if (xmove == 0 && ymove == 0){
+            return;
+        }
+        if(timer%frameRate == 0){
+            switchFrame = !switchFrame;
+        } 
+        if(switchFrame){
+            setImage(frame1);
+        } else{
+            setImage(frame2);
+        } 
+    }
     public void graphics()
     {
         
