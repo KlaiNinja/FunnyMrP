@@ -10,25 +10,29 @@ public class EnemyBug extends Enemies
 {
     int dir = 0;
     int health = 3;
-    public EnemyBug(int x, int y){
-        this.alive = true;
-        xpos = x;
-        ypos = y;
+    public EnemyBug(){
+        //Enemies.setHP(5);   
     }
 
     public void act()
     {
         Linkcheck();
     }
-    //This method moves the enemy like a homing missle as soon as it sees some player, BUT doesnt move in a different room.
-    public void Linkcheck(){
+    //This method moves the enemy like a homing missle as soon as it sees some player
+    public void Linkcheck()  {
         Actor Link = getWorld().getObjects(Link.class).get(0);
         if (!(getWorld().getObjects(Link.class).isEmpty())){
+            if ( getObjectsInRange(40*4, Link.class).size() > 0 ) {
+                 if (getObjectsInRange(45, Wall.class).size() <= 0 ) {
                 turnTowards(Link.getX(), Link.getY());
-                //Greenfoot.wait(1); //this to slow it down.
                 move(1);
+                }
+            } 
         } else {
             return;
         }
+    }  
+    public void kb(){
+        
     }
 }
