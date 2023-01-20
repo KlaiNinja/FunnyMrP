@@ -12,6 +12,7 @@ public class RandomlyGeneratingDungeon extends World
     public Map map;
     private Wall[] walls;
     private Wall[] openWalls;
+    private Door[] doors;
     /**
     Tile Sets
     ---------
@@ -37,10 +38,8 @@ public class RandomlyGeneratingDungeon extends World
             {{1, 1, 0, 1}, {0, 0, 1, 1}, {1, 0, 1, 1}, {1, 1, 1, 0}},
             {{1, 0, 0, 1}, {0, 0, 1, 1}, {0, 0, 1, 1}, {1, 0, 1, 0}},
         });
-        System.out.flush();
-        System.out.println(map.getRoom(0));
         //OBJECTS
-        addObject(new Link(),getWidth()/2,getHeight()/2+20);
+        addObject(new Link(50, 50, 35, 35),getWidth()/2,getHeight()/2+20);
         addObject(new FadeOverlay(),getWidth()/2,getHeight()/2);
         //WALLS
         walls = new Wall[]{
@@ -49,7 +48,7 @@ public class RandomlyGeneratingDungeon extends World
             new Wall(40,getHeight(), 20,getHeight()/2),//left wall
             new Wall(40,getHeight(), getWidth() - 20,getHeight()/2)//right wall
         };
-        //walls with exits
+        //walls with gaps for the exits
         openWalls = new Wall[]{
             new Wall(getWidth()/2,40, getWidth()/2 - 120,0),//top wall
             new Wall(getWidth()/2,40, getWidth()/2 - 120,0),//bottom wall
@@ -59,7 +58,7 @@ public class RandomlyGeneratingDungeon extends World
         //addObject(walls[2],walls[2].xPos, walls[2].yPos + getHeight());
         generateDungeon();
         //testDungeon();
-        block(5, 7, true, 1, 2);
+        block(4, 9, true, false, false, true, 0, 2);
         paintOrder();
     }
     //when the player goes offscreen, the whole scene scrolls at a specific direction
@@ -97,7 +96,7 @@ public class RandomlyGeneratingDungeon extends World
         }
     }
     public void paintOrder(){
-        setPaintOrder(Link.class,FadeOverlay.class,Wall.class,Key.class,Block.class,Lava.class,Water.class);
+        setPaintOrder(Link.class,FadeOverlay.class,Wall.class,Key.class,Door.class,Block.class,Lava.class,Water.class);
     }
     public void act(){
         paintOrder();
@@ -110,7 +109,8 @@ public class RandomlyGeneratingDungeon extends World
     //Dungeon Manipulation methods
     void generateRoom(int id){
         Room room = map.getRoom(id);
-        System.out.println("ID: " + id + "Pos: (" + room.pos[0] + ", " + room.pos[1] + ")");
+        char[] doorExits = new char[]{'N', 'S', 'W', 'E'};
+        //System.out.println("ID: " + id + "Pos: (" + room.pos[0] + ", " + room.pos[1] + ")");
         for (int i=0; i < walls.length; i++){
             Wall wall = walls[i];
             int newXPos = wall.xPos + getWidth()*room.pos[0];
@@ -118,21 +118,24 @@ public class RandomlyGeneratingDungeon extends World
             //if there is no exit on this side, then add a wall
             if (room.getExit(i) == 0){
                 //places the walls to the correct room based on its x and y coordinates
-                System.out.println(i);
+                //System.out.println(i);
                 addObject(new Wall(wall.width, wall.height, newXPos, newYPos), newXPos, newYPos);
             }
             else{
-                //if there is an exit, then add two half walls to leave an opening
+                //if there is an exit, then add two half walls to leave an opening for a door
                 Wall halfWall = openWalls[i];
                 addObject(new Wall(halfWall.width, halfWall.height, newXPos - halfWall.xPos, newYPos - halfWall.yPos), newXPos - halfWall.xPos, newYPos - halfWall.yPos);
                 addObject(new Wall(halfWall.width, halfWall.height, newXPos + halfWall.xPos, newYPos + halfWall.yPos), newXPos + halfWall.xPos, newYPos + halfWall.yPos);
+                Door door = new Door(id, true, doorExits[i], 1);
+                room.setDoor(door, i);
+                addObject(door, newXPos, newYPos);
             }
         }
+        room.drawDoors();
     }
     public void nextRoom(){
         
     }
-    //generates the whole dungeon with all the rooms
     public void generateDungeon(){
         for (int i=0; i < map.numOfRooms; i++){
             generateRoom(i);
@@ -198,42 +201,44 @@ public class RandomlyGeneratingDungeon extends World
         tileset=i;
     }
     //Dungeon Tile Methods
-    
+    public void block(int x, int y, int movesLeft, boolean up, boolean down, boolean left, boolean right, int event, int keypos){
+        if (!checkObjectInRange(x, y, 40, 40)) return;
+        addObject(new Block(movesLeft, up, down , left, right, event, keypos),x*40+20,getHeight()-y*40-20);
+    }
+    public void block(int x, int y, boolean up, boolean down, boolean left, boolean right, int event, int keypos){
+        if (!checkObjectInRange(x, y, 40, 40)) return;
+        addObject(new Block(5, up, down , left, right, event, keypos),x*40+20,getHeight()-y*40-20);
+    }
     public void block(int x, int y, boolean movable, int event, int keypos){
-        if (x*40+20<0||x*40+20>getWidth()||getHeight()-y*40-20<0||getHeight()-y*40-20>getHeight()){
-            System.out.println("ERROR: BLOCK AT ("+x+","+y+") IS OUT OF WORLD RANGE"); return;
-        }
+        if (!checkObjectInRange(x, y, 40, 40)) return;
         addObject(new Block(movable,event,keypos),x*40+20,getHeight()-y*40-20);
     }
     public void block(int x, int y, boolean movable, int event){
-        if (x*40+20<0||x*40+20>getWidth()||getHeight()-y*40-20<0||getHeight()-y*40-20>getHeight()){
-            System.out.println("ERROR: BLOCK AT ("+x+","+y+") IS OUT OF WORLD RANGE"); return;
-        }
+        if (!checkObjectInRange(x, y, 40, 40)) return;
         addObject(new Block(movable,event,-1),x*40+20,getHeight()-y*40-20);
     }
     public void block(int x, int y, boolean movable){
-        if (x*40+20<0||x*40+20>getWidth()||getHeight()-y*40-20<0||getHeight()-y*40-20>getHeight()){
-            System.out.println("ERROR: BLOCK AT ("+x+","+y+") IS OUT OF WORLD RANGE"); return;
-        }
+        if (!checkObjectInRange(x, y, 40, 40)) return;
         addObject(new Block(movable,0,-1),x*40+20,getHeight()-y*40-20);
     }
     public void block(int x, int y){
-        if (x*40+20<0||x*40+20>getWidth()||getHeight()-y*40-20<0||getHeight()-y*40-20>getHeight()){
-            System.out.println("ERROR: BLOCK AT ("+x+","+y+") IS OUT OF WORLD RANGE"); return;
-        }
+        if (!checkObjectInRange(x, y, 40, 40)) return;
         addObject(new Block(false,0,-1),x*40+20,getHeight()-y*40-20);
     }
     //Liquids
     public void lava(int x, int y){
-        if (x*40+20<0||x*40+20>getWidth()||getHeight()-y*40-20<0||getHeight()-y*40-20>getHeight()){
-            System.out.println("ERROR: LAVA AT ("+x+","+y+") IS OUT OF WORLD RANGE"); return;
-        }
+        if (!checkObjectInRange(x, y, 40, 40)) return;
         addObject(new Lava(),x*40+20,getHeight()-y*40-20);
     }
     public void water(int x, int y){
-        if (x*40+20<0||x*40+20>getWidth()||getHeight()-y*40-20<0||getHeight()-y*40-20>getHeight()){
-            System.out.println("ERROR: WATER AT ("+x+","+y+") IS OUT OF WORLD RANGE"); return;
-        }
+        if (!checkObjectInRange(x, y, 40, 40)) return;
         addObject(new Water(),x*40+20,getHeight()-y*40-20);
+    }
+    public boolean checkObjectInRange(int x, int y, int w, int h){
+        if (x*w+(w/2) < 0 || x*w+(w/2) > getWidth() || getHeight()-y*h-(h/2) < 0 || getHeight()-y*h-(h/2)>getHeight()){
+            System.out.println("ERROR: OBJECT AT ("+x+","+y+") IS OUT OF WORLD RANGE"); 
+            return false;
+        }
+        return true;
     }
 }
