@@ -4,6 +4,12 @@ import greenfoot.*;
 
 public class Link extends Actor
 {
+    //dir = direction 
+    //enum for customization
+    public static enum Dir {up,down,left,right}
+    Dir kbDir = Dir.down;
+    Dir currentDir = Dir.down;
+    Dir atkDir = Dir.down;
     int xmove=0;
     int xmove2=0;
     int ymove=0;
@@ -13,28 +19,33 @@ public class Link extends Actor
     int roomID = 0;
     int HP = 10; 
     boolean isKnockback = false;
+    boolean attacking = false;
     int knockbackDirection = 0;
     int counter = 0;
+    int timer = 0;
+    public static GameOverScreen gos = new GameOverScreen();
+    public static EndScreen endScreen = new EndScreen();
     public void act() 
     {
         //Methods
         if (HP > 0){
-
             try{
                 ((FadeOverlay)getWorld().getObjects(FadeOverlay.class).get(0)).setLocation(getX(),getY());
             }catch(IndexOutOfBoundsException e){}
-            if (scroll==0){
+            if ( (scroll == 0) ){
                 basicMoving();
                 enemyHitCollision();
                 collisionDetection();
                 attack();
                 if(isKnockback && counter <= 5){
-                    turn(knockbackDirection);
-                    move(10);
+                    dirmove(kbDir, 10);
                     counter++;
                     if(counter == 4){
                         isKnockback = false;
                     }
+                } else {
+                    timer++;
+                    counter = 0;
                 }
                 if (getX()>=getWorld().getWidth()-1){scroll=1;}
                 if (getX()<=0){scroll=2;}
@@ -49,6 +60,29 @@ public class Link extends Actor
         } else {
             //death
             //death();
+        }
+    }
+
+    public void dirmove(Dir dir, int mvmtSpeed){
+        int i = 0;
+        switch(dir){
+            case up:
+                i = mvmtSpeed;
+                //change kb for specific enemies here by changing i 
+                setLocation (getX(), getY() - i);
+                break;
+            case down:
+                i = mvmtSpeed;
+                setLocation (getX(), getY() + i);
+                break;
+            case left:
+                i = mvmtSpeed;
+                setLocation (getX() - i, getY());
+                break;
+            case right:
+                i = mvmtSpeed;
+                setLocation (getX() + i, getY());
+                break;
         }
     }
 
@@ -74,51 +108,53 @@ public class Link extends Actor
             if (scroll==0){scrollTimer=0; ((FadeOverlay)getWorld().getObjects(FadeOverlay.class).get(0)).fadeIn();}
         }
     }
-
     public void attack(){
-        
-        if (Greenfoot.isKeyDown("o") || Greenfoot.isKeyDown("p") ) {
-            String input = Greenfoot.getKey();
-            if (input == null) {
-                return;
-            } else {
-                switch (input){
-                    case "p":
-                        //make a sword spin atk 
-                        //this is a normal stab
-                        
-                        break;
-                    case "o":
-                        //bow and arrow atk
-                        getWorld().addObject(new bow(), getX(), getY());
-
-                        break;
+        //p for spin, o for bow, and i for knife / sword
+        if (scroll!=0)
+            return;
+        if (Greenfoot.isKeyDown("p")){ 
+            attacking = true;
+            List<EnemyBug> Abug;
+            while (attacking){
+                Abug = getObjectsInRange(55, EnemyBug.class);
+                if (Abug.size() > 0){
+                    EnemyBug bug = Abug.get(0);
+                    bug.takeKB();
+                }
+                for(int i = 0; i < 1000; i++){
+                    if (i%10 == 0){
+                        turn(1);
+                    } else if (i > 360){
+                        attacking = false;
+                    }
                 }
             }
         }
     }
 
-
     public void basicMoving()
     {
         if (scroll!=0)return;
-        int m=3; //Rate of cells that will be traveled
-        //Change movement
+        int m = 3; //Rate of cells that will be traveled
         if (Greenfoot.isKeyDown("a")&&ymove==0){
-            xmove=-m; 
-            setRotation(270);
+            xmove =- m; 
+            kbDir = Dir.right;
+            currentDir = Dir.left;
         }
         if (Greenfoot.isKeyDown("d")&&ymove==0){
-            xmove=m; 
-            setRotation(90);
+            xmove = m; 
+            kbDir = Dir.left;
+            currentDir = Dir.right;
         }
         if (Greenfoot.isKeyDown("w")&&xmove==0){
-            ymove=-m; 
-            setRotation(0);
+            ymove =- m; 
+            kbDir = Dir.down;
+            currentDir = Dir.up;
         }
         if (Greenfoot.isKeyDown("s")&&xmove==0){
-            ymove=m; 
-            setRotation(180);
+            ymove = m; 
+            kbDir = Dir.up;
+            currentDir = Dir.down;
         }
         if (! Greenfoot.isKeyDown("a")&&! Greenfoot.isKeyDown("d")){
             xmove=0;
@@ -127,29 +163,41 @@ public class Link extends Actor
             ymove=0;
         }
     }
-    static String direction="up";
-    public void graphics()
-    {
 
-    }
-    Class[] objects = {Wall.class,Block.class,Lava.class,Water.class, Door.class, Key.class, Enemies.class};
-    int collisionAmount=0;
+    Class[] objects = {Wall.class,Block.class,Lava.class,Water.class, Door.class, Key.class};
+    int collisionAmount = 0;
     //change this when adding boss !!!!1!11!11111!1!!1
-    //Actor enemy = getWorld().getObjects(Enemies.class).get(0);
     public void enemyHitCollision(){
-        if( getObjectsInRange(45, Enemies.class).size() > 0 ) {
-            //old v new/if ( (enemy.getX() + 35) > (getX()) && (enemy.getX() - 35) < (getX() ) )//if ( (enemy.getY() + 35) > (getY()) && (enemy.getX() - 35) < (getY() ) ){
-            if (isTouching(Enemies.class) ){
-                initiateKB(); //everything does 0.5hp of dmg
-            }
+        if (isTouching(EnemyBug.class)){
+            initiateKB(currentDir); //everything does 1hp of dmg
         }
     }
 
-    public void initiateKB(){
-        Actor enemy = getWorld().getObjects(Enemies.class).get(0);
+    public void initiateKB(Dir currentDirection){
+        isKnockback = true;
         HP -= 1;
-        turnTowards(enemy.getX(), enemy.getY());
-        move(-20);
+        switch(currentDirection){
+            case up:
+                if(Greenfoot.isKeyDown("w")){
+                    kbDir = Dir.down;
+                }
+                break;
+            case down:
+                if(Greenfoot.isKeyDown("s")){
+                    kbDir = Dir.up;
+                }
+                break;
+            case left:
+                if(Greenfoot.isKeyDown("a")){
+                    kbDir = Dir.right;
+                }
+                break;
+            case right:
+                if(Greenfoot.isKeyDown("d")){
+                    kbDir = Dir.left;
+                }
+                break;
+        }
     }
 
     public void collisionDetection()
