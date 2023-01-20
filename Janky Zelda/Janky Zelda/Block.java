@@ -1,10 +1,11 @@
 import greenfoot.*;
-
+import java.util.*;
 public class Block extends Actor
 {
     int xmove=0;
     int ymove=0;
-    int moves=0;
+    int numOfSpaces=20;//determines the number of spaces that a block can move at a time
+    int movesLeft;//determines the number of times you can move a block
     int event=0;//Determinds which event activate apon moving.
     int keypos=-1;
     /**
@@ -16,28 +17,101 @@ public class Block extends Actor
     */
     boolean movable=false;//If false, it will not let move from being true
     boolean move=false;//If true, it will allow the block to be pushed
+    boolean moving = false;//checks if the block is moving or not
+    boolean[] canMoveDir = {true, true, true, true};//determines which direction it can move ([Up, Down, Left, Right])
+    GreenfootImage[] arrows = {
+        new GreenfootImage("arrowUp.png"),
+        new GreenfootImage("arrowDown.png"),
+        new GreenfootImage("arrowLeft.png"),
+        new GreenfootImage("arrowRight.png"),
+    };
     public Block(boolean b, int e, int k){
         movable=b;
         move=b;
         event=e;
         keypos=k;
+        movesLeft = 5;
+        setBlockImage();
+    }
+    public Block(GreenfootImage image, boolean b, int e, int k){
+        setImage(image);
+        movable=b;
+        move=b;
+        canMoveDir[0] = movable;
+        canMoveDir[1] = movable;
+        canMoveDir[2] = movable;
+        canMoveDir[3] = movable;
+        event=e;
+        keypos=k;
+        movesLeft = 5;
+    }
+    public Block(int movesLeft, boolean up, boolean down, boolean left, boolean right, int e, int k){
+        this.movesLeft = movesLeft;
+        canMoveDir[0] = up;
+        canMoveDir[1] = down;
+        canMoveDir[2] = left;
+        canMoveDir[3] = right;
+        movable = up || down || left || right;
+        move = movable;
+        event = e;
+        keypos = k;
+        setBlockImage();
+    }
+    public void setBlockImage(){
+        GreenfootImage sprite = new GreenfootImage("GreenBlock.png");
+        for (int i=0; i < canMoveDir.length; i++){
+            int x = 0, y = 0;
+            switch(i){
+                case 0: x=7; y=0; break;//Up
+                case 1: x=7; y=20; break;//Down
+                case 2: x=0; y=10; break;//Left
+                case 3: x=15; y=10; break;//Right
+            }
+            if (canMoveDir[i]){
+                sprite.drawImage(arrows[i], x, y);
+            }
+        }
+        setImage(sprite);
     }
     public void act(){
-        if (movable==false){move=false;}
-        if (move==true){collisionDetection();}
-        
-        if (event==-1&&moves==0){move=true;}
-        
-        if (moves!=0){
+        moveBlock();
+    }
+    public void moveBlock(){
+        if (!movable){
+            move = false;
+        }
+        if (move){
+            collisionDetection();
+        }
+        //makes the block move for an unlimited number of spaces
+        if (event==-1 && numOfSpaces==0){
+            move=true;
+        }
+        //This will activate a key event if one has been specified
+        if (numOfSpaces <= 0 && event == 1){
+            
+        }
+        //numOfSpaces the block as long as their are numOfSpaces left
+        if (movesLeft > 0 && moving && numOfSpaces > 0){
+            //moves the block a number of spaces
             setLocation(getX()+xmove,getY()+ymove);
-            moves--;
-        }else{
+            numOfSpaces--;
+            move = false;
+            //when the block moved N number of spaces, then decrease moves left by 1 and it can move again
+            if (numOfSpaces <= 0){
+                movesLeft--;
+                //if it has a key event, then activate it
+                if (event == 1){
+                    key();
+                }
+                numOfSpaces = 20;
+                move = true;
+                moving = false;
+            }
+        }
+        else{
             xmove=0;
             ymove=0;
-        }
-        //This will activate an event if one has been specified
-        if (move==false&&moves==0&&event>0){
-            if (event==1){key();}
         }
     }
     public void collisionDetection()
@@ -49,21 +123,33 @@ public class Block extends Actor
             int o=13;//range of cells the object has to be within in a givin axis order to push the object
             //Down check
             Actor down = getOneObjectAtOffset(0, getImage().getHeight()/2+2,objects[collisionAmount]);
-            if (down!=null&&down.getX()>getX()-o&&down.getX()<getX()+o&&Greenfoot.isKeyDown("w")){ymove=-m;}
             //Up check
             Actor up = getOneObjectAtOffset(0, -getImage().getHeight()/2-2,objects[collisionAmount]);
-            if (up!=null&&up.getX()>getX()-o&&up.getX()<getX()+o&&Greenfoot.isKeyDown("s")){ymove=m;}
             //Left check
             Actor left = getOneObjectAtOffset(-getImage().getWidth()/2-2, 0,objects[collisionAmount]);
-            if (left!=null&&left.getY()>getY()-o&&left.getY()<getY()+o&&Greenfoot.isKeyDown("d")){xmove=m;}
             //Right check
             Actor right = getOneObjectAtOffset(getImage().getWidth()/2+2, 0,objects[collisionAmount]);
-            if (right!=null&&right.getY()>getY()-o&&right.getY()<getY()+o&&Greenfoot.isKeyDown("a")){xmove=-m;}
+            if (down != null && down.getX() > getX()-o && down.getX() < getX()+o && Greenfoot.isKeyDown("w") && canMoveDir[0]){
+                ymove=-m;
+                moving = true;
+            }
+            else if (up != null && up.getX() > getX()-o && up.getX() < getX()+o && Greenfoot.isKeyDown("s") && canMoveDir[1]){
+                ymove=m;
+                moving = true;
+            }
+            else if (left != null && left.getY() > getY()-o && left.getY() < getY()+o && Greenfoot.isKeyDown("d") && canMoveDir[3]){
+                xmove=m;
+                moving = true;
+            }
+            else if (right != null && right.getY() > getY()-o && right.getY() < getY()+o && Greenfoot.isKeyDown("a") && canMoveDir[2]){
+                xmove=-m;
+                moving = true;
+            }
             collisionAmount++;
         }
         collisionAmount=0;
         
-        /**This checks if there is an object in the blocks way when it moves*/
+        /**This checks if there is an object in the blocks way when it numOfSpaces*/
         
         Class[] blocks = {Wall.class,Block.class,Lava.class,Water.class,Water.class}; //All classes in this array can prevent the block from moving
         while (collisionAmount<blocks.length){
@@ -88,18 +174,16 @@ public class Block extends Actor
                 if (object!=null&&xmove>0){negateMoving();}
             }
             collisionAmount++;
-        }
-        if (xmove!=0||ymove!=0){move=false; moves=20;} //Moves is the amount of times the block will move before stopping
+        } 
     }
     public void negateMoving(){
         xmove=0;
         ymove=0;
     }
-    
+    //spawns the key at a specified location
     public void key(){
         int x=0;
         int y=0;
-        if (keypos==-1){keypos=Greenfoot.getRandomNumber(5);}
         if (keypos==0){x=8; y=6;}
         if (keypos==1){x=2; y=9;}
         if (keypos==2){x=14; y=9;}
