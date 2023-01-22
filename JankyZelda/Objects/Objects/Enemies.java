@@ -8,41 +8,57 @@ import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
  */
 public class Enemies extends Actor
 {
-   private int health = 5; //hp of enemy
-   private int atk; //amt of dmg deal to link
-   private int roomID;
-   private int xpos; //tracks x 
-   private int ypos;// tracks y of each enemy
-   private boolean alive; //alive?
-   private int dir; //direction the enemy is facing to move towards "link"
-private void takeDMG(int dmgtaken){
-    if (health > 0){
-        health -= dmgtaken;
-    }else{
-        destroy();
+    protected int health = 5; //hp of enemy
+    protected int atk; //amt of dmg deal to link
+    protected int roomID;
+    protected int xpos; //tracks x 
+    protected int ypos;// tracks y of each enemy
+    protected  boolean alive; //alive?
+
+    public void takeDMG(int dmgtaken){
+        if (health > 0){
+            health -= dmgtaken;
+        }else{
+            destroy();
+        }
     }
-}
-private void removeSprite(){
-    this.getWorld().removeObject(this);
-}
-public void destroy(){
-    alive = false;
-    removeSprite();
-}
-public void reset(){
-    this.health = 5;
-    this.alive  = true;
-}
-public int getHP(){
-    return this.health;
-}
-public int getAtk(){
-    return this.atk;
-}
-public void setAttk(int attk){
-    this.atk = attk;
-}
-public void setHP(int hp){
-    this.health = hp;
-}
+
+    public void removeSprite(){
+        this.getWorld().removeObject(this);
+    }
+
+    public void destroy(){
+        alive = false;
+        removeSprite();
+    }
+
+    public void reset(){
+        this.health = 5;
+        this.alive  = true;
+    }
+
+    public int getHP(){
+        return this.health;
+    }
+
+    public int getAtk(){
+        return this.atk;
+    }
+
+    public void setAttk(int attk){
+        this.atk = attk;
+    }
+
+    public void setHP(int hp){
+        this.health = hp;
+        if (health <= 0){
+            destroy();
+        }
+    }
+
+    public void takeKB(){
+        Actor Link = getWorld().getObjects(Link.class).get(0);
+        turnTowards(-Link.getX(), -Link.getY());
+        move(10);
+    }
 }
