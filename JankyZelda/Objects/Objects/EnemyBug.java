@@ -11,6 +11,7 @@ public class EnemyBug extends Enemies
     int health = 3;
     int startX = 400;
     int startY = 400;
+    int speed;
     public EnemyBug(int speed, int maxHealth, int atk, int roomID){
         super(maxHealth, atk, roomID);
         this.speed = speed;
