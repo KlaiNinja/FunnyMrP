@@ -8,6 +8,7 @@ public class RandomlyGeneratingDungeon extends World
      * 
      */
     public static Class[] all = {Wall.class,Key.class,Block.class,Lava.class,Water.class};
+    public static RandomlyGeneratingDungeon instance;
     //the map of rooms in the randomly generate dungeon
     public Map map;
     private Wall[] walls;
@@ -23,6 +24,7 @@ public class RandomlyGeneratingDungeon extends World
     4 = Grey
     */
     int tileset = 0;
+    public static Link player;
     public RandomlyGeneratingDungeon()
     {    
         // Create a new world with 600x400 cells with a cell size of 1x1 pixels.
@@ -32,6 +34,7 @@ public class RandomlyGeneratingDungeon extends World
             {new Room(2, new int[]{0, 1}, 1, 0, 0, 1), new Room(3, new int[]{1, 1}, 1, 0, 1, 0)},
         });*/
         //[N, S, W, E]
+        if (instance == null) instance = this;
         map = new Map(0, new int[][][]{
             {{0, 1, 0, 1}, {0, 1, 1, 1}, {0, 0, 1, 1}, {0, 1, 1, 0}},
             {{1, 1, 0, 1}, {1, 0, 1, 1}, {0, 1, 1, 0}, {1, 1, 0, 0}},
@@ -39,7 +42,8 @@ public class RandomlyGeneratingDungeon extends World
             {{1, 0, 0, 1}, {0, 0, 1, 1}, {0, 0, 1, 1}, {1, 0, 1, 0}},
         });
         //OBJECTS
-        addObject(new Link(50, 50, 35, 35),getWidth()/2,getHeight()/2+20);
+        player = new Link(50, 50, 35, 35);
+        addObject(player, getWidth()/2,getHeight()/2+20);
         addObject(new FadeOverlay(),getWidth()/2,getHeight()/2);
         //WALLS
         walls = new Wall[]{
@@ -58,7 +62,8 @@ public class RandomlyGeneratingDungeon extends World
         //addObject(walls[2],walls[2].xPos, walls[2].yPos + getHeight());
         generateDungeon();
         //testDungeon();
-        block(4, 9, true, false, false, true, 0, 2);
+        block(4, 6, true, false, false, true, 0, 2);
+        block(3, 6, false, false, true, true, 0, 2);
         paintOrder();
     }
     //when the player goes offscreen, the whole scene scrolls at a specific direction
@@ -203,11 +208,11 @@ public class RandomlyGeneratingDungeon extends World
     //Dungeon Tile Methods
     public void block(int x, int y, int movesLeft, boolean up, boolean down, boolean left, boolean right, int event, int keypos){
         if (!checkObjectInRange(x, y, 40, 40)) return;
-        addObject(new Block(movesLeft, up, down , left, right, event, keypos),x*40+20,getHeight()-y*40-20);
+        addObject(new Block(movesLeft, up, down , left, right, event, keypos, true),x*40+20,getHeight()-y*40-20);
     }
     public void block(int x, int y, boolean up, boolean down, boolean left, boolean right, int event, int keypos){
         if (!checkObjectInRange(x, y, 40, 40)) return;
-        addObject(new Block(5, up, down , left, right, event, keypos),x*40+20,getHeight()-y*40-20);
+        addObject(new Block(5, up, down , left, right, event, keypos, true),x*40+20,getHeight()-y*40-20);
     }
     public void block(int x, int y, boolean movable, int event, int keypos){
         if (!checkObjectInRange(x, y, 40, 40)) return;
