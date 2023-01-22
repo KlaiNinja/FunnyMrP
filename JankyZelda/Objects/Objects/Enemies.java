@@ -9,14 +9,21 @@ import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
 public class Enemies extends Actor
 {
     protected int health = 5; //hp of enemy
+    protected int maxHealth = 5;
     protected int atk; //amt of dmg deal to link
-    protected int roomID;
+    public int roomID;
     protected int xpos; //tracks x 
     protected int ypos;// tracks y of each enemy
-    protected  boolean alive; //alive?
-
+    protected boolean alive = true; //alive?
+    public Enemies(int maxHealth, int atk, int roomID){
+        this.maxHealth = maxHealth;
+        this.atk = atk;
+        this.roomID = roomID;
+        reset();
+    }
     public void takeDMG(int dmgtaken){
-        if (health > 0){
+        alive = health > 0;
+        if (alive){
             health -= dmgtaken;
         }else{
             destroy();
@@ -28,12 +35,11 @@ public class Enemies extends Actor
     }
 
     public void destroy(){
-        alive = false;
         removeSprite();
     }
 
     public void reset(){
-        this.health = 5;
+        this.health = maxHealth;
         this.alive  = true;
     }
 
@@ -45,8 +51,8 @@ public class Enemies extends Actor
         return this.atk;
     }
 
-    public void setAttk(int attk){
-        this.atk = attk;
+    public void setAttk(int atk){
+        this.atk = atk;
     }
 
     public void setHP(int hp){
@@ -55,10 +61,12 @@ public class Enemies extends Actor
             destroy();
         }
     }
-
     public void takeKB(){
         Actor Link = getWorld().getObjects(Link.class).get(0);
         turnTowards(-Link.getX(), -Link.getY());
         move(10);
+    }
+    public boolean isAlive(){
+        return this.alive;
     }
 }
