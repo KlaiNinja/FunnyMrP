@@ -1,9 +1,11 @@
 import greenfoot.*;
 import java.util.*;
+
 public class Block extends Actor
 {
     int xmove=0;
     int ymove=0;
+    int width, height;
     int numOfSpaces=20;//determines the number of spaces that a block can move at a time
     int movesLeft;//determines the number of times you can move a block
     int event=0;//Determinds which event activate apon moving.
@@ -19,6 +21,7 @@ public class Block extends Actor
     boolean move=false;//If true, it will allow the block to be pushed
     boolean moving = false;//checks if the block is moving or not
     boolean[] canMoveDir = {true, true, true, true};//determines which direction it can move ([Up, Down, Left, Right])
+    boolean pushable = true;
     GreenfootImage[] arrows = {
         new GreenfootImage("arrowUp.png"),
         new GreenfootImage("arrowDown.png"),
@@ -32,6 +35,8 @@ public class Block extends Actor
         keypos=k;
         movesLeft = 5;
         setBlockImage();
+        width = getImage().getWidth();
+        height = getImage().getHeight();
     }
     public Block(GreenfootImage image, boolean b, int e, int k){
         setImage(image);
@@ -44,8 +49,10 @@ public class Block extends Actor
         event=e;
         keypos=k;
         movesLeft = 5;
+        width = getImage().getWidth();
+        height = getImage().getHeight();
     }
-    public Block(int movesLeft, boolean up, boolean down, boolean left, boolean right, int e, int k){
+    public Block(int movesLeft, boolean up, boolean down, boolean left, boolean right, int e, int k, boolean pushable){
         this.movesLeft = movesLeft;
         canMoveDir[0] = up;
         canMoveDir[1] = down;
@@ -55,7 +62,15 @@ public class Block extends Actor
         move = movable;
         event = e;
         keypos = k;
-        setBlockImage();
+        this.pushable = pushable;
+        if (pushable){
+            setBlockImage();
+            width = getImage().getWidth();
+            height = getImage().getHeight();
+        }
+        else{
+            setImage("GreyBlock.png");
+        }
     }
     public void setBlockImage(){
         GreenfootImage sprite = new GreenfootImage("GreenBlock.png");
@@ -87,10 +102,6 @@ public class Block extends Actor
         if (event==-1 && numOfSpaces==0){
             move=true;
         }
-        //This will activate a key event if one has been specified
-        if (numOfSpaces <= 0 && event == 1){
-            
-        }
         //numOfSpaces the block as long as their are numOfSpaces left
         if (movesLeft > 0 && moving && numOfSpaces > 0){
             //moves the block a number of spaces
@@ -116,65 +127,104 @@ public class Block extends Actor
     }
     public void collisionDetection()
     {
-        Class[] objects = {Link.class}; //All classes in this array are able to push this block
-        int collisionAmount=0;
-        int m=2; //How many cells the block travels every movement
-        while (collisionAmount<objects.length){
-            int o=13;//range of cells the object has to be within in a givin axis order to push the object
-            //Down check
-            Actor down = getOneObjectAtOffset(0, getImage().getHeight()/2+2,objects[collisionAmount]);
-            //Up check
-            Actor up = getOneObjectAtOffset(0, -getImage().getHeight()/2-2,objects[collisionAmount]);
-            //Left check
-            Actor left = getOneObjectAtOffset(-getImage().getWidth()/2-2, 0,objects[collisionAmount]);
-            //Right check
-            Actor right = getOneObjectAtOffset(getImage().getWidth()/2+2, 0,objects[collisionAmount]);
-            if (down != null && down.getX() > getX()-o && down.getX() < getX()+o && Greenfoot.isKeyDown("w") && canMoveDir[0]){
-                ymove=-m;
-                moving = true;
-            }
-            else if (up != null && up.getX() > getX()-o && up.getX() < getX()+o && Greenfoot.isKeyDown("s") && canMoveDir[1]){
-                ymove=m;
-                moving = true;
-            }
-            else if (left != null && left.getY() > getY()-o && left.getY() < getY()+o && Greenfoot.isKeyDown("d") && canMoveDir[3]){
-                xmove=m;
-                moving = true;
-            }
-            else if (right != null && right.getY() > getY()-o && right.getY() < getY()+o && Greenfoot.isKeyDown("a") && canMoveDir[2]){
-                xmove=-m;
-                moving = true;
-            }
-            collisionAmount++;
+        Class[] pushingObjects = {Link.class, Block.class}; //All classes in this array are able to push this block
+        Class[] blockingObjects = {Wall.class,Lava.class,Water.class,Water.class}; //All classes in this array can prevent the block from moving
+        int spaces = 2; //How many cells the block travels every movement
+        int cells = 13;//range of cells the object has to be within in a givin axis order to push the object
+        checkPlayerCollision(pushingObjects, spaces, cells);
+        //allows other moving block to be able to push it (if it is pushable)
+        checkBlockCollision(pushingObjects, spaces, cells);
+        checkObjectCollision(blockingObjects);
+    }
+    public void checkBlockCollision(Class[] objects, int spaces, int cells){
+        //Down check
+        Block down = (Block)getOneObjectAtOffset(0, height/2+2,objects[1]);
+        //Up check
+        Block up = (Block)getOneObjectAtOffset(0, -height/2-2,objects[1]);
+        //Left check
+        Block left = (Block)getOneObjectAtOffset(-width/2-2, 0,objects[1]);
+        //Right check
+        Block right = (Block)getOneObjectAtOffset(width/2+2, 0,objects[1]);
+        //if the block below this block is moving up, then move up
+        if (down != null && down.getX() > getX()-cells && down.getX() < getX()+cells && down.ymove < 0){
+            ymove = -spaces;
+            moving = true;
+            movesLeft++;
         }
-        collisionAmount=0;
-        
-        /**This checks if there is an object in the blocks way when it numOfSpaces*/
-        
-        Class[] blocks = {Wall.class,Block.class,Lava.class,Water.class,Water.class}; //All classes in this array can prevent the block from moving
-        while (collisionAmount<blocks.length){
+        else if (up != null && up.getX() > getX()-cells && up.getX() < getX()+cells && up.ymove > 0){
+            ymove = spaces;
+            moving = true;
+            movesLeft++;
+        }
+        else if (left != null && left.getY() > getY()-cells && left.getY() < getY()+cells && left.xmove > 0){
+            xmove = spaces;
+            moving = true;
+            movesLeft++;
+        }
+        else if (right != null && right.getY() > getY()-cells && right.getY() < getY()+cells && right.xmove < 0){
+            xmove = -spaces;
+            moving = true;
+            movesLeft++;
+        }
+    }
+    public void checkPlayerCollision(Class[] objects, int spaces, int cells){
+        RandomlyGeneratingDungeon world = (RandomlyGeneratingDungeon)getWorld();
+        //Down check
+        Actor down = getOneObjectAtOffset(0, world.player.collider.height/2+2,objects[0]);
+        //Up check
+        Actor up = getOneObjectAtOffset(0, -world.player.collider.height/2-2,objects[0]);
+        //Left check
+        Actor left = getOneObjectAtOffset(-world.player.collider.width/2-2, 0,objects[0]);
+        //Right check
+        Actor right = getOneObjectAtOffset(world.player.collider.width/2+2, 0,objects[0]);
+        if (down != null && down.getX() > getX()-cells && down.getX() < getX()+cells && Greenfoot.isKeyDown("w") && canMoveDir[0]){
+            ymove = -spaces;
+            moving = true;
+        }
+        else if (up != null && up.getX() > getX()-cells && up.getX() < getX()+cells && Greenfoot.isKeyDown("s") && canMoveDir[1]){
+            ymove = spaces;
+            moving = true;
+        }
+        else if (left != null && left.getY() > getY()-cells && left.getY() < getY()+cells && Greenfoot.isKeyDown("d") && canMoveDir[3]){
+            xmove = spaces;
+            moving = true;
+        }
+        else if (right != null && right.getY() > getY()-cells && right.getY() < getY()+cells && Greenfoot.isKeyDown("a") && canMoveDir[2]){
+            xmove = -spaces;
+            moving = true;
+        }
+    }
+    public void checkObjectCollision(Class[] objects){
+        for (int n=0; n < objects.length; n++){
             //Down check
             for (int i=-getImage().getWidth()/2+2; i<getImage().getWidth()/2-2; i++){
-                Actor object = getOneObjectAtOffset(i, getImage().getHeight()/2+20,blocks[collisionAmount]);
-                if (object!=null&&ymove>0){negateMoving();}
+                Actor object = getOneObjectAtOffset(i, getImage().getHeight()/2+20,objects[n]);
+                if (object!=null && ymove>0){
+                    negateMoving();
+                }
             }
             //Up check
             for (int i=-getImage().getWidth()/2+2; i<getImage().getWidth()/2-2; i++){
-                Actor object = getOneObjectAtOffset(i, -getImage().getHeight()/2-20,blocks[collisionAmount]);
-                if (object!=null&&ymove<0){negateMoving();}
+                Actor object = getOneObjectAtOffset(i, -getImage().getHeight()/2-20,objects[n]);
+                if (object!=null && ymove<0){
+                    negateMoving();
+                }
             }
             //Left check
             for (int i=-getImage().getHeight()/2+2; i<getImage().getHeight()/2-2; i++){
-                Actor object = getOneObjectAtOffset(-getImage().getWidth()/2-20, i,blocks[collisionAmount]);
-                if (object!=null&&xmove<0){negateMoving();}
+                Actor object = getOneObjectAtOffset(-getImage().getWidth()/2-20, i,objects[n]);
+                if (object!=null && xmove<0){
+                    negateMoving();
+                }
             }
             //Right check
             for (int i=-getImage().getHeight()/2+2; i<getImage().getHeight()/2-2; i++){
-                Actor object = getOneObjectAtOffset(getImage().getWidth()/2+20, i,blocks[collisionAmount]);
-                if (object!=null&&xmove>0){negateMoving();}
+                Actor object = getOneObjectAtOffset(getImage().getWidth()/2+20, i,objects[n]);
+                if (object!=null && xmove>0){
+                    negateMoving();
+                }
             }
-            collisionAmount++;
-        } 
+        }
     }
     public void negateMoving(){
         xmove=0;
