@@ -317,22 +317,38 @@ public class Link extends Actor {
             }
         }
     }
-
+public void takeDMG(int amt){
+        HP = HP - amt; 
+        //do some thing else too
+    }
+    Enemies Enemy = new Enemies(5,1,0);
     public static void initiateKB(Dir currentDirection){
         isKnockback = true;
-        HP -= 1;
+        takeDMG(1);
+        if(HP == 5){
+            RandomlyGeneratingDungeon.heart5.removeSelf();
+        }else if(HP == 4){
+            RandomlyGeneratingDungeon.heart4.removeSelf();
+        }else if(HP == 3){
+            RandomlyGeneratingDungeon.heart3.removeSelf();
+        }else if(HP == 2){
+            RandomlyGeneratingDungeon.heart2.removeSelf();
+        }else if(HP == 1){
+            RandomlyGeneratingDungeon.heart1.removeSelf();
+            GameOver= true;
+        }
         switch(currentDirection){
             case up:
                 if(Greenfoot.isKeyDown("w")){
                     kbDir = Dir.down;
                 } else {
-                    if (EnemyBug.currentDir == EnemyBug.Dir.down){
+                    if (Enemy.currentDir == Enemies.Dir.down){
                         kbDir = Dir.down;
-                    } else if (EnemyBug.currentDir == EnemyBug.Dir.up){
+                    } else if (Enemy.currentDir == Enemies.Dir.up){
                         kbDir = Dir.up;
-                    } else if (EnemyBug.currentDir == EnemyBug.Dir.left){
+                    } else if (Enemy.currentDir == Enemies.Dir.left){
                         kbDir = Dir.left;
-                    } else if (EnemyBug.currentDir == EnemyBug.Dir.right){
+                    } else if (Enemy.currentDir == Enemies.Dir.right){
                         kbDir = Dir.right;
                     } 
                 }
@@ -341,13 +357,13 @@ public class Link extends Actor {
                 if(Greenfoot.isKeyDown("s")){
                     kbDir = Dir.up;
                 } else {
-                    if (EnemyBug.currentDir == EnemyBug.Dir.down){
+                    if (Enemy.currentDir == Enemies.Dir.down){
                         kbDir = Dir.down;
-                    } else if (EnemyBug.currentDir == EnemyBug.Dir.up){
+                    } else if (Enemy.currentDir == Enemies.Dir.up){
                         kbDir = Dir.up;
-                    } else if (EnemyBug.currentDir == EnemyBug.Dir.left){
+                    } else if (Enemy.currentDir == Enemies.Dir.left){
                         kbDir = Dir.left;
-                    } else if (EnemyBug.currentDir == EnemyBug.Dir.right){
+                    } else if (Enemy.currentDir == Enemies.Dir.right){
                         kbDir = Dir.right;
                     } 
                 }
@@ -356,13 +372,13 @@ public class Link extends Actor {
                 if(Greenfoot.isKeyDown("a")){
                     kbDir = Dir.right;
                 }else {
-                    if (EnemyBug.currentDir == EnemyBug.Dir.down){
+                    if (Enemy.currentDir == Enemies.Dir.down){
                         kbDir = Dir.down;
-                    } else if (EnemyBug.currentDir == EnemyBug.Dir.up){
+                    } else if (Enemy.currentDir == Enemies.Dir.up){
                         kbDir = Dir.up;
-                    } else if (EnemyBug.currentDir == EnemyBug.Dir.left){
+                    } else if (Enemy.currentDir == Enemies.Dir.left){
                         kbDir = Dir.left;
-                    } else if (EnemyBug.currentDir == EnemyBug.Dir.right){
+                    } else if (Enemy.currentDir == Enemies.Dir.right){
                         kbDir = Dir.right;
                     } 
                 }
@@ -371,13 +387,13 @@ public class Link extends Actor {
                 if(Greenfoot.isKeyDown("d")){
                     kbDir = Dir.left;
                 }else {
-                    if (EnemyBug.currentDir == EnemyBug.Dir.down){
+                    if (Enemy.currentDir == Enemies.Dir.down){
                         kbDir = Dir.down;
-                    } else if (EnemyBug.currentDir == EnemyBug.Dir.up){
+                    } else if (Enemy.currentDir == Enemies.Dir.up){
                         kbDir = Dir.up;
-                    } else if (EnemyBug.currentDir == EnemyBug.Dir.left){
+                    } else if (Enemy.currentDir == Enemies.Dir.left){
                         kbDir = Dir.left;
-                    } else if (EnemyBug.currentDir == EnemyBug.Dir.right){
+                    } else if (Enemy.currentDir == Enemies.Dir.right){
                         kbDir = Dir.right; 
                     }
                 }
