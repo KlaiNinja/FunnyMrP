@@ -8,10 +8,13 @@ import java.util.*;
  */
 public class EnemyBug extends Enemies
 {
-    Collider collider;
     int health = 3;
     int startX = 400;
     int startY = 400;
+    public EnemyBug(int speed, int maxHealth, int atk, int roomID){
+        super(maxHealth, atk, roomID);
+        this.speed = speed;
+    }
     public void act()
     {
         getRot( getRotation() );
