@@ -10,7 +10,8 @@ public class Enemies extends Actor
 {
     public static enum Dir {down,left,right,up}
     static Dir kbDir = Dir.down; 
-    static Dir currentDir = Dir.down; 
+    static Dir currentDir = Dir.down;
+    protected int maxHealth;
     protected int health = 5; //hp of enemy
     protected int atk; //amt of dmg deal to link
     protected int roomID;
