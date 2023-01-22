@@ -20,6 +20,12 @@ public class Enemies extends Actor
     protected boolean alive; //alive?
     protected boolean isKnockback;
     protected int counter = 0;
+    public Enemies(int maxHealth, int atk, int roomID){
+        this.maxHealth = maxHealth;
+        this.atk = atk;
+        this.roomID = roomID;
+        reset();
+    }
     public void act(){
         if(isKnockback && counter <= 5){
             dirmove(kbDir, 15); //smooth kb not implemented yet
