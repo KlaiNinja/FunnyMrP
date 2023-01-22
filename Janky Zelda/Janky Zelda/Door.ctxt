@@ -1,0 +1,19 @@
+#BlueJ class context
+comment0.target=Door
+comment0.text=\r\n\ Write\ a\ description\ of\ class\ Door\ here.\r\n\ \r\n\ @author\ (your\ name)\ \r\n\ @version\ (a\ version\ number\ or\ a\ date)\r\n
+comment1.params=doorID\ isLocked\ exit\ keysRequired
+comment1.target=Door(int,\ boolean,\ char,\ int)
+comment2.params=
+comment2.target=void\ act()
+comment3.params=blockW\ blockH
+comment3.target=void\ createDoor(int,\ int)
+comment3.text=public\ void\ createDoorImage(int\ blockW,\ int\ blockH){\r\n\ \ \ \ \ \ \ \ int\ spriteW\ \=\ ogImage.getWidth();\r\n\ \ \ \ \ \ \ \ int\ spriteH\ \=\ ogImage.getHeight();\r\n\ \ \ \ \ \ \ \ GreenfootImage\ image\ \=\ new\ GreenfootImage(blockW\ *\ spriteW,\ blockH\ *\ spriteH);\r\n\ \ \ \ \ \ \ \ //draws\ an\ array\ of\ blocks\ in\ the\ image\ based\ on\ the\ given\ width\ and\ height\r\n\ \ \ \ \ \ \ \ for\ (int\ row\ \=\ 0;\ row\ <\ blockH;\ row++){\r\n\ \ \ \ \ \ \ \ \ \ \ \ for\ (int\ block\ \=\ 0;\ block\ <\ blockW;\ block++){\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //draw\ a\ block\ as\ one\ tile\ for\ the\ whole\ block\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ System.out.println("BLOCK\:\ "\ +\ block\ +\ ",\ "\ +\ row);\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ image.drawImage(ogImage,\ block\ *\ spriteW,\ row\ *\ spriteH);\r\n\ \ \ \ \ \ \ \ \ \ \ \ }\r\n\ \ \ \ \ \ \ \ }\r\n\ \ \ \ \ \ \ \ setImage(image);//sets\ the\ new\ image\ as\ the\ current\ image\ for\ the\ door\r\n}
+comment4.params=
+comment4.target=void\ drawDoor()
+comment5.params=maxDist\ speed
+comment5.target=void\ openDoorAnim(int,\ int)
+comment6.params=
+comment6.target=void\ lockDoor()
+comment7.params=player
+comment7.target=void\ unlockDoor(Link)
+numComments=8
