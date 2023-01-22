@@ -1,0 +1,20 @@
+#BlueJ class context
+comment0.target=Enemies
+comment0.text=\r\n\ Write\ a\ description\ of\ class\ Enemies\ here.\r\n\ \r\n\ @author\ (your\ name)\ \r\n\ @version\ (a\ version\ number\ or\ a\ date)\r\n
+comment1.params=dmgtaken
+comment1.target=void\ takeDMG(int)
+comment2.params=
+comment2.target=void\ removeSprite()
+comment3.params=
+comment3.target=void\ destroy()
+comment4.params=
+comment4.target=void\ reset()
+comment5.params=
+comment5.target=int\ getHP()
+comment6.params=
+comment6.target=int\ getAtk()
+comment7.params=attk
+comment7.target=void\ setAttk(int)
+comment8.params=hp
+comment8.target=void\ setHP(int)
+numComments=9

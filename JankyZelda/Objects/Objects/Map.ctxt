@@ -1,0 +1,27 @@
+#BlueJ class context
+comment0.target=Map
+comment0.text=\r\n\ Write\ a\ description\ of\ class\ Map\ here.\r\n\ \r\n\ @author\ (your\ name)\ \r\n\ @version\ (a\ version\ number\ or\ a\ date)\r\n
+comment1.params=rooms
+comment1.target=Map(Room[][])
+comment1.text=\r\n\ Constructor\ for\ objects\ of\ class\ Map.\r\n
+comment10.params=row\ col
+comment10.target=boolean\ withinMap(int,\ int)
+comment11.params=row\ col
+comment11.target=Room\ getRoom(int,\ int)
+comment2.params=startingRoom\ mapLayout
+comment2.target=Map(int,\ int[][][])
+comment3.params=
+comment3.target=void\ createRooms()
+comment4.params=exitName
+comment4.target=void\ moveToExit(java.lang.String)
+comment5.params=spaces
+comment5.target=void\ changeColumn(int)
+comment6.params=spaces
+comment6.target=void\ changeRow(int)
+comment7.params=value\ max\ min
+comment7.target=int\ constrain(int,\ int,\ int)
+comment8.params=id
+comment8.target=Room\ getRoom(int)
+comment9.params=
+comment9.target=Room\ getCurrentRoom()
+numComments=12

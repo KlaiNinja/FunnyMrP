@@ -1,0 +1,27 @@
+#BlueJ class context
+comment0.target=Block
+comment1.params=b\ e\ k
+comment1.target=Block(boolean,\ int,\ int)
+comment10.params=objects
+comment10.target=void\ checkObjectCollision(java.lang.Class[])
+comment11.params=
+comment11.target=void\ negateMoving()
+comment12.params=
+comment12.target=void\ key()
+comment2.params=image\ b\ e\ k
+comment2.target=Block(greenfoot.GreenfootImage,\ boolean,\ int,\ int)
+comment3.params=movesLeft\ up\ down\ left\ right\ e\ k\ pushable
+comment3.target=Block(int,\ boolean,\ boolean,\ boolean,\ boolean,\ int,\ int,\ boolean)
+comment4.params=
+comment4.target=void\ setBlockImage()
+comment5.params=
+comment5.target=void\ act()
+comment6.params=
+comment6.target=void\ moveBlock()
+comment7.params=
+comment7.target=void\ collisionDetection()
+comment8.params=objects\ spaces\ cells
+comment8.target=void\ checkBlockCollision(java.lang.Class[],\ int,\ int)
+comment9.params=objects\ spaces\ cells
+comment9.target=void\ checkPlayerCollision(java.lang.Class[],\ int,\ int)
+numComments=13

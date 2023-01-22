@@ -1,0 +1,34 @@
+#BlueJ class context
+comment0.target=Link
+comment1.params=width\ height\ colliderW\ colliderH
+comment1.target=Link(int,\ int,\ int,\ int)
+comment10.params=
+comment10.target=int\ getKeysCollected()
+comment11.params=
+comment11.target=void\ basicMoving()
+comment11.text=\r\n\ \ public\ void\ basicMoving()\r\n\ \ \ \ {\r\n\ \ \ \ if\ (scroll\!\=0)return;\r\n\ \ \ \ int\ m\=3;\ //Rate\ of\ cells\ that\ will\ be\ traveled\r\n\ \ \ \ //Change\ movement\r\n\ \ \ \ if\ (Greenfoot.isKeyDown("a")&&ymove\=\=0){xmove\=-m;\ direction\="left";}\r\n\ \ \ \ if\ (Greenfoot.isKeyDown("d")&&ymove\=\=0){xmove\=m;\ direction\="right";}\r\n\ \ \ \ if\ (Greenfoot.isKeyDown("w")&&xmove\=\=0){ymove\=-m;\ direction\="up";}\r\n\ \ \ \ if\ (Greenfoot.isKeyDown("s")&&xmove\=\=0){ymove\=m;\ direction\="down";}\r\n\ \ \ \ if\ (\!\ Greenfoot.isKeyDown("a")&&\!\ Greenfoot.isKeyDown("d")){xmove\=0;}\r\n\ \ \ \ if\ (\!\ Greenfoot.isKeyDown("w")&&\!\ Greenfoot.isKeyDown("s")){ymove\=0;}\r\n\ \ \ \ }\r\n\ \ \ \ public\ void\ playerAnimation(int\ frameRate)\r\n\ \ \ \ {\r\n\ \ \ \ GreenfootImage\ frame1;\r\n\ \ \ \ GreenfootImage\ frame2;\r\n\ \ \ \ switch(direction){\r\ncase\ "left"\:\r\n\ \ \ \ frame1\ \=\ sprites[0];\r\n\ \ \ \ frame2\ \=\ sprites[1];\r\n\ \ \ \ break;\r\ncase\ "right"\:\r\n\ \ \ \ frame1\ \=\ sprites[4];\r\n\ \ \ \ frame2\ \=\ sprites[5];\r\n\ \ \ \ break;\r\ncase\ "up"\:\r\n\ \ \ \ frame1\ \=\ sprites[6];\r\n\ \ \ \ frame2\ \=\ sprites[7];\r\n\ \ \ \ break;\r\ncase\ "down"\:\r\n\ \ \ \ frame1\ \=\ sprites[2];\r\n\ \ \ \ frame2\ \=\ sprites[3];\r\n\ \ \ \ break;\r\ndefault\:\r\n\ \ \ \ frame1\ \=\ sprites[0];\r\n\ \ \ \ frame2\ \=\ sprites[1];\r\n\ \ \ \ break;\r\n\ \ \ \ }\r\n\ \ \ \ if\ (xmove\ \=\=\ 0\ &&\ ymove\ \=\=\ 0){\r\n\ \ \ \ return;\r\n\ \ \ \ }\r\n\ \ \ \ if(timer%frameRate\ \=\=\ 0){\r\n\ \ \ \ switchFrame\ \=\ \!switchFrame;\r\n\ \ \ \ }\ \r\n\ \ \ \ if(switchFrame){\r\n\ \ \ \ setImage(frame1);\r\n\ \ \ \ }\ else{\r\n\ \ \ \ setImage(frame2);\r\n\ \ \ \ }\ \r\n\ \ \ \ }\r\n\ \r\n
+comment12.params=frameRate
+comment12.target=void\ playerAnimation(int)
+comment13.params=
+comment13.target=void\ enemyHitCollision()
+comment14.params=currentDirection
+comment14.target=void\ initiateKB(Link.Dir)
+comment15.params=dx\ dy\ object
+comment15.target=greenfoot.Actor\ getObjectAtOffset(int,\ int,\ java.lang.Class)
+comment2.params=
+comment2.target=void\ act()
+comment3.params=dir\ mvmtSpeed
+comment3.target=void\ dirmove(Link.Dir,\ int)
+comment4.params=
+comment4.target=void\ death()
+comment5.params=timeLength\ speed
+comment5.target=void\ scroll(int,\ int)
+comment6.params=
+comment6.target=void\ attack()
+comment7.params=
+comment7.target=void\ clearRoom()
+comment8.params=maxDist\ obj
+comment8.target=boolean\ isClose(int,\ greenfoot.Actor)
+comment9.params=
+comment9.target=void\ foundKey()
+numComments=16
