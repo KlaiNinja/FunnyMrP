@@ -3,34 +3,34 @@ import greenfoot.*;
 
 public class Link extends Actor {
     public static enum Dir {up,down,left,right}
-    Dir kbDir = Dir.down; //the knock back direction of link
-    Dir currentDir = Dir.down; //current direction of link
-    Dir stabDir = Dir.down; //the direction of the stabbing attack
-    int speed = 3; //rate of movement
-    int xmove=0;
-    int xmove2=0;
-    int ymove=0;
-    int ymove2=0;
-    int scroll=0;
-    int scrollTimer=0;
-    int roomID = 0;
-    int HP = 10; 
-    int keysCollected = 0;
-    int left, right, up, down;
-    int knockbackDirection = 0;
-    int counter = 0;
-    int timer = 0;
-    int atktimer = 0;
-    public static int spriteW;
-    public static int spriteH;
+    static Dir kbDir = Dir.down; //the knock back direction of link
+    static Dir currentDir = Dir.down; //current direction of link
+    static Dir stabDir = Dir.down; //the direction of the stabbing attack
+    static int  speed = 3; //rate of movement
+    static int  xmove=0;
+    static int  xmove2=0;
+    static int  ymove=0;
+    static int  ymove2=0;
+    static int  scroll=0;
+    static int  scrollTimer=0;
+    static int  roomID = 0;
+    static int  HP = 10; 
+    static int  keysCollected = 0;
+    static int  left, right, up, down;
+    static int  knockbackDirection = 0;
+    static int  counter = 0;
+    static int  timer = 0;
+    static int  atktimer = 0;
+    public  static int  spriteW;
+    public  static int  spriteH;
     GreenfootImage sprite;
-    boolean slowed = false;
-    boolean isKnockback = false;
-    boolean attacking = false;
-    boolean switchFrame = false;
+    static boolean slowed = false;
+    static boolean isKnockback = false;
+    static boolean attacking = false;
+    static boolean switchFrame = false;
     Collider collider;
-    public static GameOverScreen gos = new GameOverScreen();
-    public static EndScreen endScreen = new EndScreen();
+    public  GameOverScreen gos = new GameOverScreen();
+    public  EndScreen endScreen = new EndScreen();
     GreenfootImage[] sprites = {
             new GreenfootImage("1LinkLeft.png"),
             new GreenfootImage("1LinkLeftMoving.png"),
@@ -41,7 +41,7 @@ public class Link extends Actor {
             new GreenfootImage("1LinkUp.png"),
             new GreenfootImage("1LinkUpMoving.png")
         };
-    public Link(int width, int height, int colliderW, int colliderH){
+    public Link(int width,int height,int  colliderW,int  colliderH){
         collider = new Collider(this, colliderW, colliderH);
     }
 
@@ -95,8 +95,8 @@ public class Link extends Actor {
         // }
     }
 
-    public void dirmove(Dir dir, int mvmtSpeed){
-        int i = 0;
+    public void dirmove(Dir dir,int  mvmtSpeed){
+        int  i = 0;
         switch(dir){
             case up:
                 i = mvmtSpeed;
@@ -123,7 +123,7 @@ public class Link extends Actor {
         this.getWorld().removeObject(this);
     }
 
-    public void scroll(int timeLength, int speed){
+    public void scroll(int timeLength,int  speed){
         if (scrollTimer==0){((FadeOverlay)getWorld().getObjects(FadeOverlay.class).get(0)).fadeOut();}
         scrollTimer++;
         if(scrollTimer==timeLength){
@@ -168,12 +168,13 @@ public class Link extends Actor {
             return;
         if (Greenfoot.isKeyDown("p")){ 
             attacking = true;
+            /*
             List<EnemyBug> Abug;
             while (attacking){
                 Abug = getObjectsInRange(55, EnemyBug.class);
                 if (Abug.size() > 0){
                     EnemyBug bug = Abug.get(0);
-                    bug.takeKB();
+                    bug.takeKB(EnemyBug.currentDir);
                 }
                 for(int i = 0; i <= 360; i++){
                     if (i%10 == 0){
@@ -183,35 +184,40 @@ public class Link extends Actor {
                     }
                 }
             }
+            */
         }
         if (Greenfoot.isKeyDown("space")){
             stabAttack(currentDir);
+            
+            //System.out.println("stabbed at "+ stabDir);
         }
     }
+
     public void stabAttack(Dir currentDirection){
         switch(currentDirection){
-                case up:
-                    stabDir = Dir.up;
-                    currentDir = Dir.up;
-                    attacking = true;
-                    break;
-                case down:
-                    stabDir = Dir.down;
-                    currentDir = Dir.down;
-                    attacking = true;
-                    break;
-                case left:
-                    stabDir = Dir.left;
-                    currentDir = Dir.left;
-                    attacking = true;
-                    break;
-                case right:
-                    stabDir = Dir.right;
-                    currentDir = Dir.right;
-                    attacking = true;
-                    break;    
-            }
+            case up:
+                stabDir = Dir.up;
+                currentDir = Dir.up;
+                attacking = true;
+                break;
+            case down:
+                stabDir = Dir.down;
+                currentDir = Dir.down;
+                attacking = true;
+                break;
+            case left:
+                stabDir = Dir.left;
+                currentDir = Dir.left;
+                attacking = true;
+                break;
+            case right:
+                stabDir = Dir.right;
+                currentDir = Dir.right;
+                attacking = true;
+                break;    
+        }
     }
+
     public void clearRoom(){
         Map map = ((RandomlyGeneratingDungeon) getWorld()).map;
         Room currentRoom = map.getCurrentRoom();
@@ -220,8 +226,8 @@ public class Link extends Actor {
     }
 
     public boolean isClose(int maxDist, Actor obj){
-        int xDist = getX() - obj.getX();
-        int yDist = getY() - obj.getY();
+        int  xDist = getX() - obj.getX();
+        int  yDist = getY() - obj.getY();
         double distance = Math.sqrt(xDist*xDist + yDist*yDist);
         return distance <= maxDist;
     }
@@ -231,7 +237,7 @@ public class Link extends Actor {
         System.out.println("Keys: " + keysCollected);
     }
 
-    public int getKeysCollected(){
+    public static int  getKeysCollected(){
         return keysCollected;
     }
 
@@ -302,7 +308,7 @@ public class Link extends Actor {
         } 
     }
     Class[] objects = {Wall.class,Block.class,Lava.class,Water.class, Door.class, Key.class};
-    int collisionAmount = 0;
+    static int  collisionAmount = 0;
     //change this when adding boss !!!!1!11!11111!1!!1
     public void enemyHitCollision(){
         if (getObjectsInRange(40, EnemyBug.class).size() > 0){
@@ -312,7 +318,7 @@ public class Link extends Actor {
         }
     }
 
-    public void initiateKB(Dir currentDirection){
+    public static void initiateKB(Dir currentDirection){
         isKnockback = true;
         HP -= 1;
         switch(currentDirection){
@@ -328,15 +334,14 @@ public class Link extends Actor {
                         kbDir = Dir.left;
                     } else if (EnemyBug.currentDir == EnemyBug.Dir.right){
                         kbDir = Dir.right;
-                    } else if (EnemyBug.currentDir == EnemyBug.Dir.down){
-                        kbDir = Dir.down;
                     } 
                 }
                 break;
             case down:
                 if(Greenfoot.isKeyDown("s")){
                     kbDir = Dir.up;
-                } else { if (EnemyBug.currentDir == EnemyBug.Dir.down){
+                } else {
+                    if (EnemyBug.currentDir == EnemyBug.Dir.down){
                         kbDir = Dir.down;
                     } else if (EnemyBug.currentDir == EnemyBug.Dir.up){
                         kbDir = Dir.up;
@@ -344,8 +349,6 @@ public class Link extends Actor {
                         kbDir = Dir.left;
                     } else if (EnemyBug.currentDir == EnemyBug.Dir.right){
                         kbDir = Dir.right;
-                    } else if (EnemyBug.currentDir == EnemyBug.Dir.down){
-                        kbDir = Dir.down;
                     } 
                 }
                 break;
@@ -361,8 +364,6 @@ public class Link extends Actor {
                         kbDir = Dir.left;
                     } else if (EnemyBug.currentDir == EnemyBug.Dir.right){
                         kbDir = Dir.right;
-                    } else if (EnemyBug.currentDir == EnemyBug.Dir.down){
-                        kbDir = Dir.down;
                     } 
                 }
                 break;
@@ -377,16 +378,14 @@ public class Link extends Actor {
                     } else if (EnemyBug.currentDir == EnemyBug.Dir.left){
                         kbDir = Dir.left;
                     } else if (EnemyBug.currentDir == EnemyBug.Dir.right){
-                        kbDir = Dir.right;
-                    } else if (EnemyBug.currentDir == EnemyBug.Dir.down){
-                        kbDir = Dir.down;
-                    } 
+                        kbDir = Dir.right; 
+                    }
                 }
                 break;
         }
     }
 
-    public Actor getObjectAtOffset(int dx, int dy, Class object){
+    public Actor getObjectAtOffset(int dx, int  dy, Class object){
         return getOneObjectAtOffset(dx, dy, object);
     }
 }
