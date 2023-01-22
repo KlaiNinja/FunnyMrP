@@ -1,4 +1,10 @@
 import java.util.*;
+/**
+ * Write a description of class Room here.
+ * 
+ * @author (your name) 
+ * @version (a version number or a date)
+ */
 public class Room  
 {
     // instance variables - replace the example below with your own
@@ -6,6 +12,7 @@ public class Room
     protected int[] pos = new int[2];
     protected boolean playerIsInside;
     protected int[] exits = new int[4];//[N, S, W, E] 1 = there is exit, 0 = there is NO exit
+    private Door[] doors = new Door[4];
     /**
      * Constructor for objects of class Room
      */
@@ -20,12 +27,19 @@ public class Room
         exits[3] = eExit;
         playerIsInside = false;
     }
-    public void isPlayerInRoom(int x, int y){
-        
+    public void drawDoors(){
+        for (Door door : doors){
+            if (door != null){
+                door.drawDoor();
+            }
+        }
     }
     //get the exit based on its index
     public int getExit(int index){
         return exits[index];
+    }
+    public Door[] getDoors(){
+        return doors;
     }
     //gets the exit based on its name
     public int getExit(String exitName){
@@ -35,6 +49,27 @@ public class Room
             case "west": return exits[2];
             case "east": return exits[3];
             default: return -1;//if an invalid exit name is inputed
+        }
+    }
+    public void unlockRoom(Link player, boolean unlock){
+        if (unlock){
+            for (Door door : doors){
+                if (door != null){
+                    door.unlockDoor(player);
+                }
+            }
+        }
+    }
+    public void lockDoors(){
+        for (Door door : doors){
+            if (door != null){
+                door.lockDoor();
+            }
+        }
+    }
+    public void setDoor(Door door, int i){
+        if (door != null){
+            doors[i] = door;
         }
     }
 }
