@@ -36,6 +36,7 @@ public class Map
         this.numOfRooms = rows * cols;
         this.rooms = new Room[rows][cols];
         createRooms();
+        this.currentRoom = getRoom(startingRoom);
     }
     //Creates each of the rooms based on the given map layout
     void createRooms(){
@@ -68,7 +69,7 @@ public class Map
             default: break;
         }
         currentRoom = getRoom(currentRow, currentCol);
-        System.out.println("Col: " + currentCol + "/ Row: " + currentRow);
+        currentRoom.lockDoors();
     }
     void changeColumn(int spaces){
         currentCol += spaces;
@@ -86,8 +87,11 @@ public class Map
     }
     public Room getRoom(int id){
         //gets the specifed room based on the ID
-        System.out.println(cols);
         return rooms[id/rows][id%cols];
+    }
+    //Gets the current room that the player is currently in
+    public Room getCurrentRoom(){
+        return currentRoom;
     }
     private boolean withinMap(int row, int col){
         return (row >= 0 && row < rows) && (col >= 0 && col < cols);
