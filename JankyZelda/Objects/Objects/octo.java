@@ -18,9 +18,6 @@ public class octo extends Enemies
      */       
     public void act()
     {
-        if (Greenfoot.isKeyDown("space")){
-            System.out.println(getRotation());
-        }
         timer++;
         getDir(getRotation() );
         currentDirToNEWS();
