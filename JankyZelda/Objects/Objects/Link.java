@@ -297,8 +297,7 @@ public class Link extends Actor {
             }
         } 
     }
-    Enemies Enemy = new Enemies(5,1,0);
-    public void initiateKB(Dir currentDirection){
+   public void initiateKB(Enemies Enemy, Dir currentDirection){
         if (!(isTouching(Wall.class))){isKnockback = true;}else{isKnockback = false;}
         if(HP == 4){
             RandomlyGeneratingDungeon.heart5.removeSelf();
