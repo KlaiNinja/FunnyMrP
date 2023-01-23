@@ -2,7 +2,9 @@ import java.util.*;
 import greenfoot.*;
 
 public class Link extends Actor {
-    public static enum Dir {up,down,left,right}
+    public static enum Dir {
+        up,down,left,right
+    }
     public static Dir kbDir = Dir.down; //the knock back direction of link
     public static Dir currentDir = Dir.down; //current direction of link
     public static Dir stabDir = Dir.down; //the direction of the stabbing attack
@@ -28,14 +30,9 @@ public class Link extends Actor {
     public static boolean attacking = false;
     boolean switchFrame = false;
     boolean GameOver = false;
-    GreenfootImage sprite;
-    static boolean slowed = false;
-    static boolean isKnockback = false;
-    static boolean attacking = false;
-    static boolean switchFrame = false;
     Collider collider;
-    public  GameOverScreen gos = new GameOverScreen();
-    public  EndScreen endScreen = new EndScreen();
+    public GameOverScreen gos = new GameOverScreen();
+    public EndScreen endScreen = new EndScreen();
     GreenfootImage[] sprites = {
             new GreenfootImage("1LinkLeft.png"),
             new GreenfootImage("1LinkLeftMoving.png"),
@@ -48,84 +45,81 @@ public class Link extends Actor {
         };
     public Link(int width,int height,int  colliderW,int  colliderH){
         collider = new Collider(this, colliderW, colliderH);
+        spriteW = width;
+        spriteH = height;
     }
 
     public void act() 
     {
         //Methods
-        // if (HP > 0){
-        try{
-            ((FadeOverlay)getWorld().getObjects(FadeOverlay.class).get(0)).setLocation(getX(),getY());
-        }catch(IndexOutOfBoundsException e){}
-        if ( (scroll == 0) ){
-            if (slowed){
-                speed = 1;
-            } else {
-                speed = 3;
-            }
-            basicMoving();
-            enemyHitCollision();
-            attack();
-            playerAnimation(10);
-            if(isKnockback && counter <= 5){
-                dirmove(kbDir, 7);
-                counter++;
-                if(counter == 4){
-                    isKnockback = false;
+        if (HP > 0){
+            try{
+                ((FadeOverlay)getWorld().getObjects(FadeOverlay.class).get(0)).setLocation(getX(),getY());
+            }catch(IndexOutOfBoundsException e){}
+            if  (scroll == 0) {
+                basicMoving();
+                enemyHitCollision();
+                attack();
+                playerAnimation(10);
+                if(isKnockback && counter <= 5){
+                    dirmove(kbDir, 14);
+                    counter++;
+                    if(counter == 4){
+                        isKnockback = false;
+                    }
+                } else {
+                    timer++;
+                    counter = 0;
                 }
-            } else {
-                timer++;
-                counter = 0;
+                if (collider != null){
+                    collider.checkCollision(objects);
+                }
+                if (getX()>=getWorld().getWidth()-20){scroll=1;}
+                if (getX()<=20){scroll=2;}
+                if (getY()>=getWorld().getHeight()-20){scroll=3;}
+                if (getY()<=20){scroll=4;}
             }
-            if (collider != null){
-                collider.checkCollision(objects);
+            //Press e to clear the current room after the player gets the key
+            if (Greenfoot.isKeyDown("E")){
+                clearRoom();
             }
-            if (getX()>=getWorld().getWidth()-1){scroll=1;}
-            if (getX()<=0){scroll=2;}
-            if (getY()>=getWorld().getHeight()-1){scroll=3;}
-            if (getY()<=0){scroll=4;}
+            if (scroll==0){
+                setLocation(getX()+xmove+xmove2,getY()+ymove+ymove2);
+            }else{
+                scroll(5, 30);
+            }
+        } else {
+            //gameoverscreen once dead
+            Greenfoot.setWorld(new GameOverScreen1());
         }
-        //Press e to clear the current room after the player gets the key
-        if (Greenfoot.isKeyDown("E")){
-            clearRoom();
-        }
-        if (scroll==0){
-            setLocation(getX()+xmove+xmove2,getY()+ymove+ymove2);
-        }else{
-            scroll(5, 30);
-        }
-        // } else {
-        //death
-
-        // }
     }
 
     public void dirmove(Dir dir,int  mvmtSpeed){
         int  i = 0;
-        switch(dir){
-            case up:
-                i = mvmtSpeed;
-                //change kb for specific enemies here by changing i 
-                setLocation (getX(), getY() - i);
-                break;
-            case down:
-                i = mvmtSpeed;
-                setLocation (getX(), getY() + i);
-                break;
-            case left:
-                i = mvmtSpeed;
-                setLocation (getX() - i, getY());
-                break;
-            case right:
-                i = mvmtSpeed;
-                setLocation (getX() + i, getY());
-                break;
-        }
-    }
+        if (!(getObjectsInRange(50 + 14,Wall.class).size() > 0)){
 
-    public void death(){
-        //this will be more
-        this.getWorld().removeObject(this);
+            switch(dir){
+                case up:
+                    i = mvmtSpeed;
+                    //change kb for specific enemies here by changing i 
+                    setLocation (getX(), getY() - i);
+                    break;
+                case down:
+                    i = mvmtSpeed;
+                    setLocation (getX(), getY() + i);
+                    break;
+                case left:
+                    i = mvmtSpeed;
+                    setLocation (getX() - i, getY());
+                    break;
+                case right:
+                    i = mvmtSpeed;
+                    setLocation (getX() + i, getY());
+                    break;
+            }
+        }else {
+
+        }
     }
 
     public void scroll(int timeLength,int  speed){
@@ -173,28 +167,9 @@ public class Link extends Actor {
             return;
         if (Greenfoot.isKeyDown("p")){ 
             attacking = true;
-            /*
-            List<EnemyBug> Abug;
-            while (attacking){
-                Abug = getObjectsInRange(55, EnemyBug.class);
-                if (Abug.size() > 0){
-                    EnemyBug bug = Abug.get(0);
-                    bug.takeKB(EnemyBug.currentDir);
-                }
-                for(int i = 0; i <= 360; i++){
-                    if (i%10 == 0){
-                        //turn(1);
-                    } else if (i > 360){
-                        attacking = false;
-                    }
-                }
-            }
-            */
         }
         if (Greenfoot.isKeyDown("space")){
             stabAttack(currentDir);
-            
-            //System.out.println("stabbed at "+ stabDir);
         }
     }
 
@@ -242,7 +217,7 @@ public class Link extends Actor {
         System.out.println("Keys: " + keysCollected);
     }
 
-    public static int  getKeysCollected(){
+    public int  getKeysCollected(){
         return keysCollected;
     }
 
@@ -312,36 +287,33 @@ public class Link extends Actor {
             setImage(frame2);
         } 
     }
-    Class[] objects = {Wall.class,Block.class,Lava.class,Water.class, Door.class, Key.class};
-    static int  collisionAmount = 0;
+    Class[] objects = {Wall.class,Block.class,Lava.class,Water.class, Door.class, Enemies.class};
+    int collisionAmount = 0;
     //change this when adding boss !!!!1!11!11111!1!!1
     public void enemyHitCollision(){
-        if (getObjectsInRange(40, EnemyBug.class).size() > 0){
-            if (isTouching(EnemyBug.class)){
+        if (getObjectsInRange(30, Enemies.class).size() > 0){
+            if (isTouching(Enemies.class)){
                 initiateKB(currentDir); //everything does 1hp of dmg
             }
-        }
-    }
-public void takeDMG(int amt){
-        HP = HP - amt; 
-        //do some thing else too
+        } 
     }
     Enemies Enemy = new Enemies(5,1,0);
-    public static void initiateKB(Dir currentDirection){
-        isKnockback = true;
-        takeDMG(1);
-        if(HP == 5){
+    public void initiateKB(Dir currentDirection){
+        if (!(isTouching(Wall.class))){isKnockback = true;}else{isKnockback = false;}
+        if(HP == 4){
             RandomlyGeneratingDungeon.heart5.removeSelf();
-        }else if(HP == 4){
-            RandomlyGeneratingDungeon.heart4.removeSelf();
         }else if(HP == 3){
-            RandomlyGeneratingDungeon.heart3.removeSelf();
+            RandomlyGeneratingDungeon.heart4.removeSelf();
         }else if(HP == 2){
-            RandomlyGeneratingDungeon.heart2.removeSelf();
+            RandomlyGeneratingDungeon.heart3.removeSelf();
         }else if(HP == 1){
+            RandomlyGeneratingDungeon.heart2.removeSelf();
+        }else if(HP == 0){
             RandomlyGeneratingDungeon.heart1.removeSelf();
-            GameOver= true;
+            GameOver = true;
         }
+
+        takeDMG(1);
         switch(currentDirection){
             case up:
                 if(Greenfoot.isKeyDown("w")){
@@ -404,6 +376,11 @@ public void takeDMG(int amt){
                 }
                 break;
         }
+    }
+
+    public void takeDMG(int amt){
+        HP = HP - amt; 
+        //do some thing else too
     }
 
     public Actor getObjectAtOffset(int dx, int  dy, Class object){
