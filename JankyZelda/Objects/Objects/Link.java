@@ -3,26 +3,31 @@ import greenfoot.*;
 
 public class Link extends Actor {
     public static enum Dir {up,down,left,right}
-    static Dir kbDir = Dir.down; //the knock back direction of link
-    static Dir currentDir = Dir.down; //current direction of link
-    static Dir stabDir = Dir.down; //the direction of the stabbing attack
-    static int  speed = 3; //rate of movement
-    static int  xmove=0;
-    static int  xmove2=0;
-    static int  ymove=0;
-    static int  ymove2=0;
-    static int  scroll=0;
-    static int  scrollTimer=0;
-    static int  roomID = 0;
-    static int  HP = 10; 
-    static int  keysCollected = 0;
-    static int  left, right, up, down;
-    static int  knockbackDirection = 0;
-    static int  counter = 0;
-    static int  timer = 0;
-    static int  atktimer = 0;
-    public  static int  spriteW;
-    public  static int  spriteH;
+    public static Dir kbDir = Dir.down; //the knock back direction of link
+    public static Dir currentDir = Dir.down; //current direction of link
+    public static Dir stabDir = Dir.down; //the direction of the stabbing attack
+    int speed = 3; //rate of movement
+    int xmove=0;
+    int xmove2=0;
+    int ymove=0;
+    int ymove2=0;
+    int scroll=0;
+    int scrollTimer=0;
+    int roomID = 0;
+    int HP = 10; 
+    int keysCollected = 0;
+    int left, right, up, down;
+    int knockbackDirection = 0;
+    int counter = 0;
+    int timer = 0;
+    int atktimer = 0;
+    public int spriteW;
+    public int spriteH;
+    GreenfootImage sprite;
+    boolean isKnockback = false;
+    public static boolean attacking = false;
+    boolean switchFrame = false;
+    boolean GameOver = false;
     GreenfootImage sprite;
     static boolean slowed = false;
     static boolean isKnockback = false;
