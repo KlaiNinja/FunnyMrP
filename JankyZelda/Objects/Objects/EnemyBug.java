@@ -12,12 +12,12 @@ public class EnemyBug extends Enemies
         super(maxHealth, atk, roomID);
     }
     int health = 5;
-    int startX = 400;
-    int startY = 400;
+    int startX = 500;
+    int startY = 90;
     public void act()
     {
         getDir( getRotation() );
-        currentDirToNEWS();
+        currentDirToNEWS(); //NEWS north east west south
         Linkcheck();
         isHit();
     }
@@ -25,11 +25,20 @@ public class EnemyBug extends Enemies
     public void Linkcheck(){
         timer++;
         Actor Link = getWorld().getObjects(Link.class).get(0);
-        if (getObjectsInRange(40*4, Link.class).size() > 0 ) {
-            turnTowards(Link.getX(), Link.getY());
-            slowedmove(2);
-        } else {
-            this.randomMove();
-        }
+        if (!(isTouching(Wall.class))){ 
+            if (getObjectsInRange(40*4, Link.class).size() > 0 ) {
+                turnTowards(Link.getX(), Link.getY());
+                slowedmove(2);
+            } else {
+                if (Math.abs(getX() - startX) < 10){
+                    if (Math.abs(getY() - startY) < 10){
+                        this.randomMove();
+                    }
+                } 
+            }
+            if (getObjectsInRange(35, Link.class).size() > 0){
+                move(-1);
+            }
+        } 
     }
 }
