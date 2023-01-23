@@ -1,0 +1,16 @@
+#BlueJ class context
+comment0.target=Arrow
+comment0.text=\r\n\ Write\ a\ description\ of\ class\ Arrow\ here.\r\n\ \r\n\ @author\ (your\ name)\ \r\n\ @version\ (a\ version\ number\ or\ a\ date)\r\n
+comment1.params=dmg\ speed\ angle\ lifespan\ range
+comment1.target=Arrow(int,\ int,\ double,\ int,\ int)
+comment2.params=
+comment2.target=void\ act()
+comment3.params=
+comment3.target=void\ moveInDir()
+comment4.params=
+comment4.target=void\ stopAndDie()
+comment5.params=
+comment5.target=void\ disappear()
+comment6.params=
+comment6.target=void\ detectCollision()
+numComments=7

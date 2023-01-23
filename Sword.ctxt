@@ -1,0 +1,14 @@
+#BlueJ class context
+comment0.target=Sword
+comment0.text=\r\n\ Write\ a\ description\ of\ class\ Sword\ here.\r\n\ \r\n\ @author\ (your\ name)\ \r\n\ @version\ (a\ version\ number\ or\ a\ date)\r\n
+comment1.params=player\ type\ dmg\ kb\ dur\ cool
+comment1.target=Sword(Link,\ Link.Attacks,\ int,\ int,\ int,\ int)
+comment2.params=
+comment2.target=void\ act()
+comment3.params=
+comment3.target=void\ useWeapon()
+comment4.params=
+comment4.target=void\ enemyCollision()
+comment5.params=
+comment5.target=void\ aimAttack()
+numComments=6

@@ -1,0 +1,10 @@
+#BlueJ class context
+comment0.target=EnemyBug
+comment0.text=\r\n\ Write\ a\ description\ of\ class\ EnemyBug\ here.\r\n\ \r\n\ @author\ (your\ name)\ \r\n\ @version\ (a\ version\ number\ or\ a\ date)\r\n
+comment1.params=maxHealth\ atk\ roomID
+comment1.target=EnemyBug(int,\ int,\ int)
+comment2.params=
+comment2.target=void\ act()
+comment3.params=
+comment3.target=void\ Linkcheck()
+numComments=4

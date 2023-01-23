@@ -1,0 +1,14 @@
+#BlueJ class context
+comment0.target=Bow
+comment0.text=\r\n\ Write\ a\ description\ of\ class\ Bow\ here.\r\n\ \r\n\ @author\ (your\ name)\ \r\n\ @version\ (a\ version\ number\ or\ a\ date)\r\n
+comment1.params=player\ dmg\ kb\ range\ fireRate
+comment1.target=Bow(Link,\ int,\ int,\ int,\ int)
+comment2.params=
+comment2.target=void\ act()
+comment3.params=
+comment3.target=void\ useWeapon()
+comment4.params=
+comment4.target=void\ shootArrow()
+comment5.params=pos\ mouse
+comment5.target=void\ aimTowardsMouse(Vector2,\ greenfoot.MouseInfo)
+numComments=6
