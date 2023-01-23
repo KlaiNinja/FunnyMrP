@@ -13,6 +13,7 @@ public class Room
     protected boolean playerIsInside;
     protected int[] exits = new int[4];//[N, S, W, E] 1 = there is exit, 0 = there is NO exit
     private Door[] doors = new Door[4];
+    private ArrayList<Enemies> enemies;
     /**
      * Constructor for objects of class Room
      */
@@ -26,6 +27,10 @@ public class Room
         exits[2] = wExit;
         exits[3] = eExit;
         playerIsInside = false;
+        enemies = new ArrayList<Enemies>();
+    }
+    public void addEnemy(Enemies enemy){
+        if (enemy != null)enemies.add(enemy);
     }
     public void drawDoors(){
         for (Door door : doors){
@@ -59,6 +64,12 @@ public class Room
                 }
             }
         }
+    }
+    public ArrayList<Enemies> getEnemies(){
+        return enemies;
+    }
+    public void removeEnemy(Enemies enemy){
+        enemies.remove(enemy);
     }
     public void lockDoors(){
         for (Door door : doors){
